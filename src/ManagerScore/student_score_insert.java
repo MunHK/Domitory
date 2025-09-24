@@ -1,8 +1,9 @@
-package UserScore;
+package ManagerScore;
 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -22,6 +23,7 @@ import javax.swing.table.TableColumnModel;
 
 import Database.DAO;
 import Database.StudentRecordDTO;
+import Server.Client;
 
 public class student_score_insert extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -54,8 +56,10 @@ public class student_score_insert extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @throws IOException 
 	 */
-	public student_score_insert() {
+	public student_score_insert() throws IOException {
+    	Client client = new Client();
 		setTitle("점수 등록");
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -120,7 +124,13 @@ public class student_score_insert extends JFrame {
 				
 				System.out.println(record.getUniversityNumber());
 				
-				String E = db.student_score_insert(record);
+				String E = null;
+				try {
+					E = client.CheckInsert(record);
+				} catch (ClassNotFoundException | IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				
 				if(E.equals("성공")) {
 					showConfirmationDialog("등록되었습니다.");
@@ -128,7 +138,13 @@ public class student_score_insert extends JFrame {
 				else {
 					showConfirmationDialog("실패되었습니다.");
 				}
-				student_score_insert manage = new student_score_insert();
+				student_score_insert manage = null;
+				try {
+					manage = new student_score_insert();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				manage.setVisible(true);
 				dispose();
 			}
@@ -159,7 +175,13 @@ public class student_score_insert extends JFrame {
 		JButton btnNewButton_2 = new JButton("뒤로가기");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				student_score manage = new student_score();
+				student_score manage = null;
+				try {
+					manage = new student_score();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				manage.setVisible(true);
 				dispose();
 			}
@@ -220,9 +242,13 @@ public class student_score_insert extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				record.setName(textField.getText());
 				record.setUniversityNumber(textField_1.getText());
-				
-				List<StudentRecordDTO> studentList = db.Search_Student_Score(record);
-
+				List<StudentRecordDTO> studentList = null;
+				try {
+					studentList = client.ScoreBring(record);
+				} catch (ClassNotFoundException | IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 		    	// Clear existing rows from the table
                 DefaultTableModel model = (DefaultTableModel) table.getModel();
                 model.setRowCount(0);

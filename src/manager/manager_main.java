@@ -28,8 +28,8 @@ import Database.SrudentInfoRoomDTO;
 import ManagerInandOut.inandout_manage;
 import ManagerOutside.outside_manage;
 import ManagerRoom.room_number;
+import ManagerScore.student_score;
 import UserInformation.student_info_main;
-import UserScore.student_score;
 
 public class manager_main extends JFrame {
 	private static final long serialVersionUID = 1L;

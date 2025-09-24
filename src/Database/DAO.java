@@ -28,6 +28,63 @@ public class DAO {
          System.out.println("MySQL 서버 연동 실패 > "+e.toString());
       }
    }
+ //학생 점수 정보 조회
+   public List<StudentRecordDTO> Search_Student_Score(StudentRecordDTO record){
+	   List<StudentRecordDTO> studentList = new ArrayList<>();
+	   try {
+		   Class.forName("com.mysql.cj.jdbc.Driver");
+	       System.out.println("JDBC 드라이버가 성공적으로 로드되었습니다");
+	       
+	       String sql = "";
+	       
+	       if (!record.getName().equals("") && !record.getUniversityNumber().equals("")) { // 둘다 입력
+	    	    sql = "select * from student_record where name ='" + record.getName() + "' and university_number='" + record.getUniversityNumber() + "'";
+	    	    System.out.println("1");
+	    	} 
+	       else if (record.getName().equals("") && !record.getUniversityNumber().equals("")) { // 학번만입력
+	    	    sql = "select * from student_record where university_number='" + record.getUniversityNumber() + "'";
+	    	    System.out.println("2");
+	    	} 
+	       else if ((!record.getName().equals("")) &&( record.getUniversityNumber().equals(""))) { // 이름만입력
+	    	    sql = "select * from student_record where name ='" + record.getName() + "'";
+	    	    System.out.println("3");
+	    	} 
+	       else { // 아무것도 입력 안함
+	    	    sql = "select * from student_record where name !=''";
+	    	    System.out.println("4");
+	    	    System.out.println(record.getUniversityNumber()+record.getName());
+	    	}
+	       System.out.println("SQL Query: " + sql); // 쿼리 확인
+	       try { 
+	    	   ResultSet resultSet = st.executeQuery(sql);
+		       	
+		            while (resultSet.next()) {
+		            	StudentRecordDTO studentInfo = new StudentRecordDTO();
+
+		                 // Retrieve values from the ResultSet and set them in the DTO
+		            	studentInfo.setUniversityNumber(resultSet.getString("university_number"));
+		                studentInfo.setName(resultSet.getString("name"));
+		                studentInfo.setReason(resultSet.getString("reason"));
+		                studentInfo.setScore(resultSet.getString("score"));
+		                 // Add the DTO to the list
+		                studentList.add(studentInfo);
+
+		                 // Now you can use the studentInfo object as needed
+		                System.out.println("University Number: " + studentInfo.getUniversityNumber());
+		                System.out.println("Name: " + studentInfo.getName());
+		                System.out.println("reason: " + studentInfo.getReason());
+		                System.out.println("score: " + studentInfo.getScore()); 
+
+		            }		            
+		       }catch (SQLException ex) {
+	           ex.printStackTrace();
+	           JOptionPane.showInputDialog(this, "데이터베이스에 연결 중 오류 발생: " + ex.getMessage());
+	       }
+	   }catch(Exception e) {
+	         System.out.println("MySQL 서버 연동 실패 > "+e.toString());
+	   }
+	   return studentList; 
+   }
    //로그인
    public boolean login(StudentInformationDTO information) {//로그인 확인
 	      boolean flag = false;
@@ -383,63 +440,7 @@ public class DAO {
 	    return "실패";
 	}
    
-   //학생 점수 정보 조회
-   public List<StudentRecordDTO> Search_Student_Score(StudentRecordDTO record){
-	   List<StudentRecordDTO> studentList = new ArrayList<>();
-	   try {
-		   Class.forName("com.mysql.cj.jdbc.Driver");
-	       System.out.println("JDBC 드라이버가 성공적으로 로드되었습니다");
-	       
-	       String sql = "";
-	       
-	       if (!record.getName().equals("") && !record.getUniversityNumber().equals("")) { // 둘다 입력
-	    	    sql = "select * from student_record where name ='" + record.getName() + "' and university_number='" + record.getUniversityNumber() + "'";
-	    	    System.out.println("1");
-	    	} 
-	       else if (record.getName().equals("") && !record.getUniversityNumber().equals("")) { // 학번만입력
-	    	    sql = "select * from student_record where university_number='" + record.getUniversityNumber() + "'";
-	    	    System.out.println("2");
-	    	} 
-	       else if ((!record.getName().equals("")) &&( record.getUniversityNumber().equals(""))) { // 이름만입력
-	    	    sql = "select * from student_record where name ='" + record.getName() + "'";
-	    	    System.out.println("3");
-	    	} 
-	       else { // 아무것도 입력 안함
-	    	    sql = "select * from student_record where name !=''";
-	    	    System.out.println("4");
-	    	    System.out.println(record.getUniversityNumber()+record.getName());
-	    	}
-	       System.out.println("SQL Query: " + sql); // 쿼리 확인
-	       try { 
-	    	   ResultSet resultSet = st.executeQuery(sql);
-		       	
-		            while (resultSet.next()) {
-		            	StudentRecordDTO studentInfo = new StudentRecordDTO();
-
-		                 // Retrieve values from the ResultSet and set them in the DTO
-		            	studentInfo.setUniversityNumber(resultSet.getString("university_number"));
-		                studentInfo.setName(resultSet.getString("name"));
-		                studentInfo.setReason(resultSet.getString("reason"));
-		                studentInfo.setScore(resultSet.getString("score"));
-		                 // Add the DTO to the list
-		                studentList.add(studentInfo);
-
-		                 // Now you can use the studentInfo object as needed
-		                System.out.println("University Number: " + studentInfo.getUniversityNumber());
-		                System.out.println("Name: " + studentInfo.getName());
-		                System.out.println("reason: " + studentInfo.getReason());
-		                System.out.println("score: " + studentInfo.getScore()); 
-
-		            }		            
-		       }catch (SQLException ex) {
-	           ex.printStackTrace();
-	           JOptionPane.showInputDialog(this, "데이터베이스에 연결 중 오류 발생: " + ex.getMessage());
-	       }
-	   }catch(Exception e) {
-	         System.out.println("MySQL 서버 연동 실패 > "+e.toString());
-	   }
-	   return studentList; 
-   }
+   
    //외박 수정
    public String outside_repair(String university_number, String reason, String content, String outing_date, String returning_date) {
 	   try {

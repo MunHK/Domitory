@@ -1,8 +1,9 @@
-package UserScore;
+package ManagerScore;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,6 +15,7 @@ import javax.swing.JTextField;
 
 import Database.DAO;
 import Database.StudentRecordDTO;
+import Server.Client;
 
 public class student_score_repair{
 
@@ -33,14 +35,17 @@ public class student_score_repair{
 
 	/**
 	 * Create the application.
+	 * @throws IOException 
 	 */
-	public student_score_repair(String universityNumber,String name,String reason,String score) {
+	public student_score_repair(String universityNumber,String name,String reason,String score) throws IOException {
 		initialize(universityNumber, name,reason,score);
 	}
 	/**
 	 * Initialize the contents of the frame.
+	 * @throws IOException 
 	 */
-	private void initialize(String universityNumber,String name,String reason,String score) {
+	private void initialize(String universityNumber,String name,String reason,String score) throws IOException {
+    	Client client = new Client();
 		frame = new JFrame("학생 등록");
 		frame.setTitle("점수 수정");
 		setVisible(true);
@@ -113,7 +118,13 @@ public class student_score_repair{
 				record.setName(textField_1.getText());
 				record.setReason(textField_2.getText());
 				record.setScore(textField_3.getText());
-				String result=db.student_Record_repair(record,reason);
+				String result = null;
+				try {
+					result = client.CheckUpdate(record,reason);
+				} catch (ClassNotFoundException | IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				if(result.equals("성공")) {
 					showConfirmationDialog("수정되었습니다!");
 				}
@@ -137,7 +148,13 @@ public class student_score_repair{
 				record.setName(textField_1.getText());
 				record.setReason(textField_2.getText());
 				record.setScore(textField_3.getText());
-				boolean result=db.student_Record_delete(record);
+				boolean result = false;
+				try {
+					result = client.CheckDelete(record);
+				} catch (ClassNotFoundException | IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				
 				if(result) {
 					showConfirmationDialog("삭제되었습니다!");

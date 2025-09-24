@@ -14,6 +14,7 @@ import java.util.List;
 
 import Database.DAO;
 import Database.StudentInformationDTO;
+import Database.StudentRecordDTO;
 
 
 public class Server {
@@ -59,6 +60,7 @@ public class Server {
                     String[] requestData = request.split(":");
                     String operation = requestData[0];
                     System.out.println(operation);
+                	StudentRecordDTO record = new StudentRecordDTO();
                     switch (operation) {
                         case "로그인":
                         	StudentInformationDTO information = new StudentInformationDTO();
@@ -68,14 +70,47 @@ public class Server {
                             System.out.println(loginResult);
                             out.writeObject(loginResult ? "로그인 성공" : "로그인 성공");
                             break;
-                        case "개인정보조회":
-                        	StudentInformationDTO informationdata = new StudentInformationDTO();
-                        	informationdata.setUniversityNumber(requestData[1]);
-                        	informationdata.setBirth(requestData[2]);
-                        	informationdata.setName(requestData[3]);
-                            StudentInformationDTO CheckResult = db.Search_Student_Info2(informationdata);
+                        case "점수정보조회":
+                        	record.setUniversityNumber(requestData[1]);
+                        	record.setName(requestData[2]);
+                        	List<StudentRecordDTO> CheckResult = db.Search_Student_Score(record);
                             System.out.println(CheckResult);
                             out.writeObject(CheckResult);
+                            break;
+                        case "학번확인":
+                        	String UNum=requestData[1];
+                        	String CheckNum = db.record_student_check(UNum);
+                            System.out.println(CheckNum);
+                            out.writeObject(CheckNum);
+                            break;
+                        case "점수추가":
+                        	record.setUniversityNumber(requestData[1]);
+                        	record.setName(requestData[2]);
+                        	record.setReason(requestData[3]);
+                        	record.setScore(requestData[4]);
+                        	String resultInsert = db.student_score_insert(record);
+                            System.out.println(resultInsert);
+                            out.writeObject(resultInsert);
+                            break;
+                        case "수정":
+                        	record.setUniversityNumber(requestData[1]);
+                        	record.setName(requestData[2]);
+                        	record.setReason(requestData[3]);
+                        	record.setScore(requestData[4]);
+                        	String prereaseon=requestData[5];
+                        	String resultUpdate = db.student_Record_repair(record,prereaseon);
+                            System.out.println(resultUpdate);
+                            out.writeObject(resultUpdate);
+                            break;
+                        case "삭제":
+                        	record.setUniversityNumber(requestData[1]);
+                        	record.setName(requestData[2]);
+                        	record.setReason(requestData[3]);
+                        	record.setScore(requestData[4]);
+                        	boolean resultDelete = db.student_Record_delete(record);
+                            System.out.println(resultDelete);
+                            out.writeObject(resultDelete ? "데이터 점수 삭제 성공" : "데이터 점수 삭제 실패");
+                            out.writeObject(resultDelete);
                             break;
                         // UPDATE, DELETE 등 다른 작업에 대한 case도 추가 가능
                         default:

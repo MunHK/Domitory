@@ -1,9 +1,10 @@
-package UserScore;
+package ManagerScore;
 
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -21,6 +22,8 @@ import javax.swing.table.TableColumnModel;
 
 import Database.DAO;
 import Database.StudentRecordDTO;
+import Server.Client;
+import manager.manager_main;
 
 public class student_score extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -47,8 +50,11 @@ public class student_score extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @throws IOException 
 	 */
-	public student_score() {
+	public student_score() throws IOException {
+
+    	Client client = new Client();
 		setTitle("점수 관리");
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -137,7 +143,13 @@ public class student_score extends JFrame {
 		    public void actionPerformed(ActionEvent e) {
 		    	record.setUniversityNumber("");
 		    	record.setName("");
-		    	List<StudentRecordDTO> studentList = db.Search_Student_Score(record);
+		    	List<StudentRecordDTO> studentList = null;
+				try {
+					studentList = client.ScoreBring(record);
+				} catch (ClassNotFoundException | IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 		    	
 		    	// Clear existing rows from the table
                 DefaultTableModel model = (DefaultTableModel) table.getModel();
